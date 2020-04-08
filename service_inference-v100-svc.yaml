@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: "2020-03-23T14:49:23Z"
+  finalizers:
+  - service.kubernetes.io/load-balancer-cleanup
+  labels:
+    app: inference-server-v100
+  name: inference-v100-svc
+  namespace: default
+  resourceVersion: "7656068"
+  selfLink: /api/v1/namespaces/default/services/inference-v100-svc
+  uid: 3244853e-8190-4bb3-af87-aec8f7104982
+spec:
+  clusterIP: 10.0.0.114
+  externalTrafficPolicy: Cluster
+  ports:
+  - name: http-inference-server
+    nodePort: 30562
+    port: 8000
+    protocol: TCP
+    targetPort: http
+  - name: grpc-inference-server
+    nodePort: 30054
+    port: 8001
+    protocol: TCP
+    targetPort: grpc
+  - name: metrics-inference-server
+    nodePort: 30329
+    port: 8002
+    protocol: TCP
+    targetPort: metrics
+  selector:
+    app: inference-server-v100
+  sessionAffinity: None
+  type: LoadBalancer
+status:
+  loadBalancer:
+    ingress:
+    - ip: 35.224.243.148
