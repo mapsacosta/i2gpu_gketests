@@ -2,13 +2,13 @@
 Tests were performed from several client styles (Cloud-Cloud FNAL-Cloud MIT-Cloud) to a TRT server deployed on GKE
 
 ##  ailab-inference GKE cluster
-Master version: 1.15.9-gke.24
-Master zone: us-central1-a
-Node zones: us-central1-a, us-central1-f
-VPC-native (alias IP):Enabled
-Pod address range: 10.24.0.0/14
-Default maximum pods per node: 110
-Service address range: 10.0.0.0/20
+* Master version: 1.15.9-gke.24
+* Master zone: us-central1-a
+* Node zones: us-central1-a, us-central1-f
+* VPC-native (alias IP):Enabled
+* Pod address range: 10.24.0.0/14
+* Default maximum pods per node: 110
+* Service address range: 10.0.0.0/20
 
 ### Node pools
 
