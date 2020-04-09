@@ -10,7 +10,7 @@ Tests were performed from several client styles (Cloud-Cloud FNAL-Cloud MIT-Clou
 * Default maximum pods per node: 110
 * Service address range: 10.0.0.0/20
 
-### Node pools
+### GKE Node pools
 
 | Use                       | Pool Name            | Machine type   | OS                           | GPU model         | # GPUs | Instance template                              |
 |---------------------------|----------------------|----------------|------------------------------|-------------------|--------|------------------------------------------------|
@@ -18,6 +18,15 @@ Tests were performed from several client styles (Cloud-Cloud FNAL-Cloud MIT-Clou
 | ProtoDune                 | gpu-4-t4-boot        | n1-standard-4  | Container-Optimized OS (cos) | NVIDIA Tesla T4   | 4      | gke-ailab-inference-gpu-4-t4-boot-14e2482b     |
 | CMS                       | gpu-v100-cos-himem   | n1-standard-16 | Container-Optimized OS (cos) | NVIDIA Tesla V100 | 4      | gke-ailab-inference-gpu-v100-cos-hime-42b578a6 |
 | CMS                       | gpu-8-v100-cos-himem | n1-standard-16 | Container-Optimized OS (cos) | NVIDIA Tesla V100 | 8      | gke-ailab-inference-gpu-8-v100-cos-hi-2a214dda |
+
+### GCE Instance Groups
+
+| Node pool            | Instance grp (central-1f)                          | Instance grp (central-1a)                          | Template                                       |
+|----------------------|----------------------------------------------------|----------------------------------------------------|------------------------------------------------|
+| cpuonly-pool         | gke-ailab-inference-cpuonly-pool-1615bf50-grp      | gke-ailab-inference-cpuonly-pool-43548431-grp      | gke-ailab-inference-cpuonly-pool-0f0dbec1      |
+| gpu-4-t4-boot        | gke-ailab-inference-gpu-4-t4-boot-5e8115ec-grp     | gke-ailab-inference-gpu-4-t4-boot-14e2482b-grp     | gke-ailab-inference-gpu-4-t4-boot-14e2482b     |
+| gpu-8-v100-cos-himem | gke-ailab-inference-gpu-8-v100-cos-hi-f6c70a6f-grp | gke-ailab-inference-gpu-8-v100-cos-hi-2a214dda-grp | gke-ailab-inference-gpu-v100-cos-hime-42b578a6 |
+| gpu-v100-cos-himem   | gke-ailab-inference-gpu-v100-cos-hime-57e34068-grp | gke-ailab-inference-gpu-v100-cos-hime-42b578a6-grp | gke-ailab-inference-gpu-8-v100-cos-hi-2a214dda |
 
 ### Public endpoints
 
