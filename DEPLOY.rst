@@ -120,6 +120,43 @@ following steps:
       secret:
         secretName: gcpcreds
 
+Model Repository (AWS/S3)
+----------------
+
+If you already have a model repository you may use that with this helm
+chart. If you do not have a model repository, you can checkout a local
+copy of the inference server source repository to create an example
+model repository::
+
+  $ git clone https://github.com/NVIDIA/triton-inference-server.git
+
+Triton Server needs a repository of models that it will make available
+for inferencing. For an AWS case you will place the model repository
+in an S3 bucket (IMPORTANT: Bucket must be in the same region as the Kubernetes/EKS cluster)::
+
+  $ aws s3api create-bucket --bucket inf-server-repo --region us-west-2
+
+Copy desired models into the S3 bucket::
+
+  $ aws s3 cp ~/facile s3://inf-server-repoy/model_repository/facile --recursive
+
+AWS Permissions
+^^^^^^^^^^^^^^^
+
+Make sure bucket permissions are set so that the inference server
+can access the model repository. In addition, mount an AWS config file 
+inside the pod soecifying the region where the bucket is located.
+
+Then point an environment variable to the file (has to be readable by the user running the container)
+
+* Modify the deployment.yaml manifesr to include the
+  AwS_CONFIG_FILE environment variable::
+
+    env:
+      - name: AWS_CONFIG_FILE
+        value: '/opt/tensorrtserver/aws/config'
+
+
 Deploy Prometheus and Grafana (Optional, requires helm)
 -----------------------------
 
