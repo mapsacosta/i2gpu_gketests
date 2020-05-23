@@ -37,24 +37,14 @@ Kubernetes Deploy: Triton Inference Server Cluster
     or earlier version or a GKE 1.14.6 or later version to avoid this
     issue.**
 
-A helm chart for installing a single cluster of NVIDIA Triton
-Inference Server is provided. By default the cluster contains a single
-instance of the inference server but the *replicaCount* configuration
-parameter can be set to create a cluster of any size, as described
-below. This guide assumes you already have a functional Kubernetes
-cluster and helm installed (see below for instructions on installing
-helm). If you want Triton Server to use GPUs for inferencing, your
-cluster must be configured with support for the NVIDIA driver and CUDA
-version required by the version of the inference server you are using.
-
-This helm chart is available from `Triton Inference Server GitHub
-<https://github.com/NVIDIA/triton-inference-server>`_ or from the
-`NVIDIA GPU Cloud (NGC) <https://ngc.nvidia.com>`_
-
-The steps below describe how to set-up a model repository, use helm to
+The steps below describe how to set-up a model repository, use custom manifests to
 launch the inference server, and then send inference requests to the
 running server. You can access a Grafana endpoint to see real-time
-metrics reported by the inference server.
+metrics reported by the inference server if desired.
+
+Remember to deploy the nvidia device plugin in the cluster before putting GPU workloads on it, the plugin allows the node to expose installed GPUs to the Kubernetes environment
+
+  $ kubectl apply -f https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/1.0.0-beta/nvidia-device-plugin.yml
 
 
 Model Repository (GCS)
@@ -145,7 +135,17 @@ AWS Permissions
 
 Make sure bucket permissions are set so that the inference server
 can access the model repository. In addition, mount an AWS config file 
-inside the pod soecifying the region where the bucket is located.
+inside the pod specifying the region where the bucket is located.
+
+Create Kubernetes secrets with the right access key values, the pod will then consume these secrets in the form of environmental variables
+
+    $ kubectl create secret generic aws-access-key-id --from-literal=aws_access_key_id=<KEY_ID>
+    $ kubectl create secret generic aws-secret-access-key --from-literal=aws_secret_access_key=<SECRET_ACCESS_KEY>
+
+Create Kubernetes secrets with AWS config and mount it inside the pod:
+
+    $ kubectl create secret generic aws-credentials --from-file=./credentials
+    $ kubectl create secret generic aws-config --from-file=./config
 
 Then point an environment variable to the file (has to be readable by the user running the container)
 

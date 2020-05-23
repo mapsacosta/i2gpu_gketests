@@ -2,17 +2,10 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
-    deployment.kubernetes.io/revision: "6"
-  creationTimestamp: "2020-03-23T14:49:23Z"
-  generation: 17
   labels:
     app: inference-server-v100
-    release: test
   name: tensorrt-inference-server-v100
-  namespace: default
-  resourceVersion: "10454046"
-  selfLink: /apis/apps/v1/namespaces/default/deployments/tensorrt-inference-server-v100
-  uid: 44353698-e303-446f-813b-b2d8c6c1f37c
+  namespace: trt
 spec:
   progressDeadlineSeconds: 600
   replicas: 0
@@ -20,7 +13,6 @@ spec:
   selector:
     matchLabels:
       app: inference-server-v100
-      release: test
   strategy:
     type: Recreate
   template:
@@ -28,12 +20,11 @@ spec:
       creationTimestamp: null
       labels:
         app: inference-server-v100
-        release: test
     spec:
       containers:
       - args:
         - trtserver
-        - --model-store=gs://ailab-model-repo/model_repository
+          #    - --model-store=gs://ailab-model-repo/model_repository
         - --allow-metrics=true
         - --log-verbose=5
         - --grpc-infer-thread-count=64

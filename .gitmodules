@@ -1,0 +1,3 @@
+[submodule "aws/aws/FPGA_as_a_Service"]
+	path = aws/aws/FPGA_as_a_Service
+	url = https://github.com/Xilinx/FPGA_as_a_Service

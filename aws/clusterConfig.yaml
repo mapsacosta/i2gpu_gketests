@@ -1,0 +1,43 @@
+---
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: ailab-eks
+  region: us-west-2
+
+iam:
+  withOIDC: true
+  serviceAccounts:
+  - metadata:
+      name: s3-reader
+      # if no namespace is set, "default" will be used;
+      # the namespace will be created if it doesn't exist already
+      labels: {aws-usage: "application"}
+    attachPolicyARNs:
+    - "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
+  - metadata:
+      name: cache-access
+      labels: {aws-usage: "application"}
+    attachPolicyARNs:
+    - "arn:aws:iam::aws:policy/AmazonDynamoDBReadOnlyAccess"
+    - "arn:aws:iam::aws:policy/AmazonElastiCacheFullAccess"
+
+nodeGroups:
+  - name: "gpu-1"
+    instanceType: p3.2xlarge
+    ssh: # use existing EC2 key
+      publicKeyName: eksnodekey
+    tags:
+      # EC2 tags required for cluster-autoscaler auto-discovery
+      k8s.io/cluster-autoscaler/enabled: "true"
+    desiredCapacity: 1
+  - name: "fpga-1"
+    instanceType: f1.2xlarge
+    ssh: # use existing EC2 key
+      publicKeyName: eksnodekey
+    labels: { role: fpga }
+    tags:
+      # EC2 tags required for cluster-autoscaler auto-discovery
+      k8s.io/cluster-autoscaler/enabled: "true"
+    desiredCapacity: 1
