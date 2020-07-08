@@ -1,6 +1,10 @@
 #!/bin/bash
 
-#This AWS host is low on disk so we first prune other images we're not using
+#This script assumes that these two repos are cloned in the home directory of the centos user
+# https://github.com/aws/aws-fpga.git
+# https://github.com/holzman/grpc-fpga-trt-docker.git
+
+#AWS host is low on disk so we first prune other docker images we're not using
 echo "Pruning docker"
 docker image prune -a
 
