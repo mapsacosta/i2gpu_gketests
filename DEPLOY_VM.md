@@ -1,8 +1,9 @@
 To start the Triton server in a baremetal GCP VM:
-1. Create (or start) a cuda-enabled VM in GCP Compute Engine. 
-See instructions on creating here:
-For our purposes, a VM is already created. This VM simulates the conditions of the Triton server used for previous tests (Kubernetes-based) on an isolated, private VM. 
-2. Make sure to authenticate with the server before running the next commands. Follow the prompt: 
+1. Create (or start) a cuda-enabled VM in GCP Compute Engine.
+* See instructions on creating one here: https://cloud.google.com/compute/docs/gpus/create-vm-with-gpus#dlvm-image
+* For our tests a VM simulates the conditions of the Triton server used for previous tests (Kubernetes-based) on an isolated machine. 
+* Start the VM from the console: `triton-compute-tesla-t4`
+2. Make sure to authenticate with the server. Follow the instructions on the prompt: 
 ```
 gcloud auth login
 ```
