@@ -1,0 +1,105 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: inference-server-v100
+    owner: macosta
+  name: tensorrt-inference-server-v100
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: inference-server-v100
+      owner: macosta
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: inference-server-v100
+        owner: macosta
+    spec:
+      containers:
+      - args:
+        - tritonserver
+        - --model-store=gs://sonic-model-repo/model_repository
+        - --allow-metrics=true
+        - --log-verbose=5
+        image: nvcr.io/nvidia/tritonserver:21.05-py3
+        imagePullPolicy: Always
+        name: tensorrt-inference-server-v100
+        ports:
+        - containerPort: 8000
+          name: http
+          protocol: TCP
+        - containerPort: 8001
+          name: grpc
+          protocol: TCP
+        - containerPort: 8002
+          name: metrics
+          protocol: TCP
+        resources:
+          limits:
+            cpu: "15"
+            memory: 60Gi
+            nvidia.com/gpu: "4"
+          requests:
+            cpu: "12"
+            memory: 32Gi
+            nvidia.com/gpu: "4"
+        securityContext:
+          runAsUser: 1000
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /secret
+          name: vsecret
+          readOnly: true
+        - mountPath: /dev/shm
+          name: dshm
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: vsecret
+        secret:
+          defaultMode: 420
+          secretName: gcpcreds
+      - emptyDir:
+          medium: Memory
+        name: dshm
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: inference-server-v100
+  name: inference-v100-svc
+  namespace: default
+spec:
+  externalTrafficPolicy: Cluster
+  ports:
+  - name: http-inference-server
+    nodePort: 30562
+    port: 8000
+    protocol: TCP
+    targetPort: http
+  - name: grpc-inference-server
+    nodePort: 30054
+    port: 8001
+    protocol: TCP
+    targetPort: grpc
+  - name: metrics-inference-server
+    nodePort: 30329
+    port: 8002
+    protocol: TCP
+    targetPort: metrics
+  selector:
+    app: inference-server-v100
+    owner: macosta
+  sessionAffinity: None
+  type: LoadBalancer
