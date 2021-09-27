@@ -1,20 +1,25 @@
 #!/bin/bash
 
-i=1
+#CHANGE ME - Meaningful name for your deployment
+export server_name="tritonrt-server"
 
-for dir in $(find ~/Desktop/GCO/repos/sonic-models/models -maxdepth 1 -mindepth 1 -type d | awk -F '/' '{print $9}')
-do
-  export server_name="triton0$i"
-  echo "Creating $server_name for $dir"
-  echo "$server_name,$dir" >> out
-  export owner=$(whoami)
-  export model_dir=gs://sonic-model-repo/sonic-7-yongbin/${server_name}/model_repository/
-  ((i=i+1))
-  envsubst < tensorrt-inference-server-v100.template > ${server_name}-server.yaml
-  kubectl create -f ${server_name}-server.yaml
-  until [ -n "$(kubectl get svc ${server_name}-svc -o jsonpath='{.status.loadBalancer.ingress[0].ip}')" ]; do
-    sleep 5
-  done
-  svc_ip=$(kubectl get svc ${server_name}-svc -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-  echo "$server_name,$dir,$svc_ip"
+#CHANGE ME - Your name/username for avoiding confusions
+export owner=$(whoami)
+
+#CHANGE ME - Point this variable to the model repository to use.
+#            Needs to be an already existing GCS bucket in the HarrisGroup project
+
+export model_dir=gs://sonic-model-repo/model_repository
+
+echo "Creating $server_name"
+envsubst < tensorrt-inference-server-v100.template > ${server_name}-server.yaml
+kubectl create -f ${server_name}-server.yaml
+
+echo "Waiting for the service to become active.."
+until [ -n "$(kubectl get svc ${server_name}-svc -o jsonpath='{.status.loadBalancer.ingress[0].ip}')" ]; do
+  sleep 5
 done
+svc_ip=$(kubectl get svc ${server_name}-svc -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+
+echo "Done, your tritonRT server can be reached at ${svc_ip}"
+echo "${server_name} -> ${svc_ip}"
