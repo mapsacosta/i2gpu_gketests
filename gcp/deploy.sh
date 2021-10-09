@@ -1,25 +1,40 @@
 #!/bin/bash
 
-#CHANGE ME - Meaningful name for your deployment
-export server_name="tritonrt-server"
+# @author. Maria AcostaFlechas  (acostaflechas@protonmail.ch)
 
-#CHANGE ME - Your name/username for avoiding confusions
-export owner=$(whoami)
+while getopts 's:m:u:' flag; do
+  case "${flag}" in
+    s) export TRITON_SERVER_NAME="${OPTARG}"
+       ;;
+    u) TRITON_OWNER_USERNAME="${OPTARG}"
+       ;;
+    m) export MODEL_GCS_BUCKET="${OPTARG}"
+       ;;
+    h) echo "Usage: $0"
+       echo "Optional: -s [<TritonRT server name (DNS safe)>] -u [<usename>] -m [<Model repo path (GCS bucket)]"
+       ;;
+  esac
+done
 
-#CHANGE ME - Point this variable to the model repository to use.
-#            Needs to be an already existing GCS bucket in the HarrisGroup project
+# Parameter validation
+[ -z ${TRITON_SERVER_NAME} ] && echo "Error please enter server name" && exit 1
+[ -z ${MODEL_GCS_BUCKET} ] && echo "Error please enter Model Repository" && exit 1
 
-export model_dir=gs://sonic-model-repo/model_repository
+if [ -n $TRITON_OWNER_USERNAME ]
+then
+  export TRITON_OWNER_USERNAME=$(whoami)
+fi
 
-echo "Creating $server_name"
-envsubst < tensorrt-inference-server-v100.template > ${server_name}-server.yaml
-kubectl create -f ${server_name}-server.yaml
+echo "Creating ${TRITON_SERVER_NAME} (${TRITON_OWNER_USERNAME})"
+envsubst '${TRITON_SERVER_NAME},${TRITON_OWNER_USERNAME},${MODEL_GCS_BUCKET}' < triton-inference-server.template > ./${TRITON_SERVER_NAME}.yaml
+cat ./${TRITON_SERVER_NAME}.yaml
+kubectl create -f ${TRITON_SERVER_NAME}.yaml
 
 echo "Waiting for the service to become active.."
-until [ -n "$(kubectl get svc ${server_name}-svc -o jsonpath='{.status.loadBalancer.ingress[0].ip}')" ]; do
+until [ -n "$(kubectl get svc ${TRITON_SERVER_NAME}-svc -o jsonpath='{.status.loadBalancer.ingress[0].ip}')" ]; do
   sleep 5
 done
-svc_ip=$(kubectl get svc ${server_name}-svc -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+svc_ip=$(kubectl get svc ${TRITON_SERVER_NAME}-svc -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
 
 echo "Done, your tritonRT server can be reached at ${svc_ip}"
-echo "${server_name} -> ${svc_ip}"
+echo "${TRITON_SERVER_NAME} -> ${svc_ip}"
