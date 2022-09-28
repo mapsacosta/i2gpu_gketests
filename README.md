@@ -6,7 +6,7 @@ Links
 - [FPGAs-as-a-Service Toolkit (FaaST)](https://arxiv.org/abs/2010.08556)
 - [GPU-accelerated machine learning inference as a service for computing in neutrino experiments](https://arxiv.org/abs/2009.04509)
 - [GPU coprocessors as a service for deep learning inference in high energy physics](https://arxiv.org/abs/2007.10359)
-- [Applications and Techniques for Fast Machine Learning in Science] (https://arxiv.org/abs/2110.13041)
+- [Applications and Techniques for Fast Machine Learning in Science](https://arxiv.org/abs/2110.13041)
 
 ## Introduction
 Tests were performed from several client styles (Cloud-Cloud FNAL-Cloud MIT-Cloud) to a TRT server deployed on GKE
